@@ -2,9 +2,6 @@
 library(edgeR)
 library(limma)
 
-counts <- read.delim("counts_mod.txt", row.names = 1)
-head(counts)
-
 #storing data into a list for processing
 d0 <- DGEList(counts) #counts needs to be a matrix
 
@@ -241,7 +238,51 @@ row.names(age_f_DEGs) <- 1:nrow(age_f_DEGs)
 age_f_DEGs$age <- "70-79"
 
 #---------------------other-----------------------------------------------------
+
 all_ages <- rbind(age_a_DEGs, age_b_DEGs, age_c_DEGs, age_d_DEGs, age_e_DEGs, age_f_DEGs)
+all_ages <- merge(all_ages, chr_gene_ensembl, by = "ensembl_gene_id", all.x = TRUE)
+all_ages <- all_ages %>% relocate(gene)
+all_ages <- all_ages %>% relocate(chr)
+
+#---------------------DEGs and chromosome summary-------------------------------
+
+DEG_chromosome_counts <- all_ages %>%
+  group_by(chr) %>%
+  summarize(count = n()) %>%
+  ungroup()
+
+#orders the chr in DEG_chromosome_counts so that it counts is greatest counts to lowest counts
+DEG_chromosome_counts <- DEG_chromosome_counts[order(-DEG_chromosome_counts$count),]
+
+
+DEG_chromosome_counts$chr <- factor(DEG_chromosome_counts$chr, 
+                                         levels = DEG_chromosome_counts$chr[order(-DEG_chromosome_counts$count)])
+
+# Create the ordered bar plot with vertical labels and descrete colors
+ggplot(data = DEG_chromosome_counts, aes(x = chr, y = count, fill = chr)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Chromosome", y = "DEG count") +
+  ggtitle("Number of chromosome counts for DEGs btw females and males for all ages in colon tissue") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+  scale_fill_viridis(discrete = TRUE) +
+  scale_y_continuous(breaks = seq(0, 9, by =1), labels = seq(0, 9, by = 1))
+
+
+#---------------------DEGs and frequency of genes summary-----------------------
+
+
+
+# Create a frequency plot
+ggplot(genes_shared_at_least, aes(x = shared_age_groups)) +
+  geom_bar() +
+  labs(x = "Number of Shared Age Groups", y = "Number of Genes") +
+  ggtitle("Frequency of DEGs in the five age groups in colon tissue") +
+  theme_minimal() +
+  scale_fill_viridis(discrete = TRUE) +
+  scale_y_continuous(breaks = seq(0, 13, by =1), labels = seq(0, 13, by = 1))
+
+
 
 
 
