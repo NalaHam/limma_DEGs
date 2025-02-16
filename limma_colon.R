@@ -10,7 +10,7 @@ d0 <- calcNormFactors(d0) #calcNormFactors doesn’t normalize the data, it just
 d0
 
 #filter out low-expression genes
-cutoff <- 100
+cutoff <- 5
 drop <- which(apply(cpm(d0), 1, max) < cutoff)
 d <- d0[-drop,] 
 dim(d) # number of genes left at cutt off of 5 = 30215

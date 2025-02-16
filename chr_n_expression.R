@@ -23,7 +23,7 @@ counts_test_a <- merge(count_test, ref_genome_genes, by = "gene", all.x = TRUE)
 
 counts_test_a <- counts_test_a %>% relocate(chr) #move chr coln to the front
 
-#Summary of gene expression with known chromosome loactions
+#Summary of gene expression with known chromosome locations
 #creates a df of the chromosomes and how many times it occurs in the expression df
 chromosome_counts <- counts_test_a %>%
   group_by(chr) %>%

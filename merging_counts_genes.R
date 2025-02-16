@@ -16,3 +16,5 @@ counts <- subset(counts, chr != y_gene) #gives a total of 34567 counts that are 
 
 counts_no_Y <- counts
 
+
+
